@@ -1,22 +1,21 @@
 `timescale 1ns / 1ps
 
-
 module  RV32core(
-        input debug_en,  			// debug enable
-        input debug_step,  			// debug step clock
+        input debug_en,  		// debug enable
+        input debug_step,  		// debug step clock
         input [6:0] debug_addr,  	// debug address
         output[31:0] debug_data,  	// debug data
         output[31:0] mem_addr,
         output[31:0] mem_data,
-        input clk,  				// main clock
-        input rst,  				// synchronous reset
+        input clk,  			// main clock
+        input rst,  			// synchronous reset
         input interrupter,  		// interrupt source, for future use
         input vga_sw
 	);
 
-	wire debug_clk;
+    wire debug_clk;
 
-	debug_clk clock(.clk(clk),.debug_en(debug_en),.debug_step(debug_step),.debug_clk(debug_clk));
+    debug_clk clock(.clk(clk),.debug_en(debug_en),.debug_step(debug_step),.debug_clk(debug_clk));
 
     wire Branch_ctrl, JALR, RegWrite_ctrl, mem_w_ctrl, MIO_ctrl,
          ALUSrc_A_ctrl, ALUSrc_B_ctrl, DatatoReg_ctrl, rs1use_ctrl, rs2use_ctrl;
@@ -27,8 +26,8 @@ module  RV32core(
     wire forward_ctrl_ls;
     wire [1:0] forward_ctrl_A, forward_ctrl_B;
 
-	wire PC_EN_IF;
-	wire [31:0] PC_IF, next_PC_IF, PC_4_IF, inst_IF;
+    wire PC_EN_IF;
+    wire [31:0] PC_IF, next_PC_IF, PC_4_IF, inst_IF;
 
     wire reg_FD_EN,reg_FD_stall,reg_FD_flush, cmp_res_ID;
     wire [31:0] jump_PC_ID, PC_ID, inst_ID, Debug_regs, rs1_data_reg, rs2_data_reg,
@@ -56,21 +55,18 @@ module  RV32core(
     wire [2:0] cmu_state;
     wire [2:0] ram_state;
 
-
     wire reg_MW_EN, reg_MW_flush, RegWrite_WB, DatatoReg_WB;
     wire [4:0] rd_WB;
     wire [31:0] wt_data_WB, PC_WB, inst_WB, ALUout_WB, Datain_WB;
 
-
     // IF
-	REG32 REG_PC(.clk(debug_clk),.rst(rst),.CE(PC_EN_IF),.D(next_PC_IF),.Q(PC_IF));
+    REG32 REG_PC(.clk(debug_clk),.rst(rst),.CE(PC_EN_IF),.D(next_PC_IF),.Q(PC_IF));
     
     add_32 add_IF(.a(PC_IF),.b(32'd4),.c(PC_4_IF));
 
     MUX2T1_32 mux_IF(.I0(PC_4_IF),.I1(jump_PC_ID),.s(Branch_ctrl),.o(next_PC_IF));
 
     ROM_D inst_rom(.a(PC_IF[11:2]),.spo(inst_IF));
-
 
     // ID
     REG_IF_ID reg_IF_ID(.clk(debug_clk),.rst(rst),.EN(reg_FD_EN),.Data_stall(reg_FD_stall),
@@ -111,12 +107,11 @@ module  RV32core(
         .forward_ctrl_ls(forward_ctrl_ls),.forward_ctrl_A(forward_ctrl_A),
         .forward_ctrl_B(forward_ctrl_B));
 
-
     // EX
     REG_ID_EX reg_ID_EX(.clk(debug_clk),.rst(rst),.EN(reg_DE_EN),.flush(reg_DE_flush),.IR_ID(inst_ID),
-		.PCurrent_ID(PC_ID),.rs1_addr(inst_ID[19:15]),.rs2_addr(inst_ID[24:20]),.rs1_data(rs1_data_ID),
-		.rs2_data(rs2_data_ID),.Imm32(Imm_out_ID),.rd_addr(inst_ID[11:7]),.ALUSrc_A(ALUSrc_A_ctrl),
-		.ALUSrc_B(ALUSrc_B_ctrl),.ALUC(ALUControl_ctrl),.DatatoReg(DatatoReg_ctrl),
+	.PCurrent_ID(PC_ID),.rs1_addr(inst_ID[19:15]),.rs2_addr(inst_ID[24:20]),.rs1_data(rs1_data_ID),
+	.rs2_data(rs2_data_ID),.Imm32(Imm_out_ID),.rd_addr(inst_ID[11:7]),.ALUSrc_A(ALUSrc_A_ctrl),
+	.ALUSrc_B(ALUSrc_B_ctrl),.ALUC(ALUControl_ctrl),.DatatoReg(DatatoReg_ctrl),
         .RegWrite(RegWrite_ctrl),.WR(mem_w_ctrl),.u_b_h_w(inst_ID[14:12]),.MIO(MIO_ctrl),
         .PCurrent_EX(PC_EXE),.IR_EX(inst_EXE),.rs1_EX(rs1_EXE),.rs2_EX(rs2_EXE),
         .A_EX(rs1_data_EXE),.B_EX(rs2_data_EXE),.Imm32_EX(Imm_EXE),.rd_EX(rd_EXE),
@@ -132,7 +127,6 @@ module  RV32core(
         .res(ALUout_EXE),.zero(ALUzero_EXE),.overflow(ALUoverflow_EXE));
     
     MUX2T1_32 mux_forward_EXE(.I0(rs2_data_EXE),.I1(Datain_MEM),.s(forward_ctrl_ls),.o(Dataout_EXE));
-
 
     // MEM
     REG_EX_MEM reg_EXE_MEM(.clk(debug_clk),.rst(rst),.EN(reg_EM_EN),.flush(reg_EM_flush),
@@ -150,26 +144,23 @@ module  RV32core(
         .mem_data_i(ram_dout),.mem_data_o(ram_din),.mem_ack_i(ram_ack),.cmu_state(cmu_state));
 
     data_ram RAM(.clk(debug_clk),.rst(rst),.addr(ram_addr),
-		.cs(ram_cs),.we(ram_we),.din(ram_din),.dout(ram_dout),
-		.stall(),.ack(ram_ack),.ram_state(ram_state));
+	.cs(ram_cs),.we(ram_we),.din(ram_din),.dout(ram_dout),
+	.stall(),.ack(ram_ack),.ram_state(ram_state));
     
     assign mem_addr = vga_sw ? MIO_MEM ? ALUout_MEM : 32'hFFFFFFFF : PC_IF;
-	assign mem_data = vga_sw ? MIO_MEM ? Datain_MEM : 32'hAA55AA55 : inst_IF;
+    assign mem_data = vga_sw ? MIO_MEM ? Datain_MEM : 32'hAA55AA55 : inst_IF;
 
-	
     // WB
     REG_MEM_WB reg_MEM_WB(.clk(debug_clk),.rst(rst),.EN(reg_MW_EN),.flush(reg_MW_flush),.IR_MEM(inst_MEM),
         .PCurrent_MEM(PC_MEM),.ALUO_MEM(ALUout_MEM),.Datai(Datain_MEM),.rd_MEM(rd_MEM),
         .DatatoReg_MEM(DatatoReg_MEM),.RegWrite_MEM(RegWrite_MEM),
-
         .PCurrent_WB(PC_WB),.IR_WB(inst_WB),.ALUO_WB(ALUout_WB),.MDR_WB(Datain_WB),
         .rd_WB(rd_WB),.DatatoReg_WB(DatatoReg_WB),.RegWrite_WB(RegWrite_WB));
     
     MUX2T1_32 mux_WB(.I0(ALUout_WB),.I1(Datain_WB),.s(DatatoReg_WB),.o(wt_data_WB));
 
-
-	wire [31:0] Test_signal;
-	assign debug_data = debug_addr[5] ? Test_signal : Debug_regs;
+    wire [31:0] Test_signal;
+    assign debug_data = debug_addr[5] ? Test_signal : Debug_regs;
 
     CPUTEST    U1_3(.PC_IF(PC_IF),
                     .PC_ID(PC_ID),
