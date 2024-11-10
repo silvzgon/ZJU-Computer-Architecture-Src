@@ -5,6 +5,7 @@ module cmp_32(  input [31:0] a,
                 input [2:0] ctrl,
                 output c
     );
+  
     parameter cmp_EQ  = 3'b001;
     parameter cmp_NE  = 3'b010;
     parameter cmp_LT  = 3'b011;
@@ -32,6 +33,5 @@ module cmp_32(  input [31:0] a,
                LTU & res_LTU |
                GE  & res_GE  |
                GEU & res_GEU ;
-    
 
 endmodule
