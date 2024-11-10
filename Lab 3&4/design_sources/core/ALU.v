@@ -2,7 +2,7 @@
 
 module ALU(
     input[31:0] A, B,
-    input[3:0] Control,
+    input[3:0]  Control,
     output[31:0] res,
     output zero, overflow
 );
@@ -23,13 +23,13 @@ module ALU(
     wire[4:0] shamt = B[4:0];
     wire[32:0] res_subu = {1'b0,A} - {1'b0,B};
 
-    wire[31:0] res_ADD  = A + B;
-    wire[31:0] res_SUB  = A - B;
-    wire[31:0] res_AND  = A & B;
-    wire[31:0] res_OR   = A | B;
-    wire[31:0] res_XOR  = A ^ B;
-    wire[31:0] res_SLL  = A << shamt;
-    wire[31:0] res_SRL  = A >> shamt;
+    wire[31:0] res_ADD = A + B;
+    wire[31:0] res_SUB = A - B;
+    wire[31:0] res_AND = A & B;
+    wire[31:0] res_OR  = A | B;
+    wire[31:0] res_XOR = A ^ B;
+    wire[31:0] res_SLL = A << shamt;
+    wire[31:0] res_SRL = A >> shamt;
 
     wire add_of = A[31] & B[31] & ~res_ADD[31] | // neg + neg = pos
                   ~A[31] & ~B[31] & res_ADD[31]; // pos + pos = neg
@@ -59,7 +59,7 @@ module ALU(
     assign zero = ~|res;
     
     assign overflow = (Control == ALU_ADD && add_of) | 
-                    (Control == ALU_SUB && sub_of);
+                      (Control == ALU_SUB && sub_of);
     
     assign res = {32{ADD }} & res_ADD  |
                  {32{SUB }} & res_SUB  |
