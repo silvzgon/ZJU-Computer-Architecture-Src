@@ -4,8 +4,7 @@
 module CtrlUnit(
     input[31:0] inst,
     input cmp_res,
-    output Branch, ALUSrc_A, ALUSrc_B, DatatoReg, RegWrite, mem_w,
-        MIO, rs1use, rs2use,
+    output Branch, ALUSrc_A, ALUSrc_B, DatatoReg, RegWrite, mem_w, MIO, rs1use, rs2use,
     output [1:0] hazard_optype,
     output [2:0] ImmSel, cmp_ctrl,
     output [3:0] ALUControl,
@@ -55,16 +54,16 @@ module CtrlUnit(
     wire SRLI  = Iop & funct3_5 & funct7_0;
     wire SRAI  = Iop & funct3_5 & funct7_32;
 
-    wire BEQ = Bop & funct3_0;
-    wire BNE = Bop & funct3_1;
-    wire BLT = Bop & funct3_4;
-    wire BGE = Bop & funct3_5;
+    wire BEQ  = Bop & funct3_0;
+    wire BNE  = Bop & funct3_1;
+    wire BLT  = Bop & funct3_4;
+    wire BGE  = Bop & funct3_5;
     wire BLTU = Bop & funct3_6;
     wire BGEU = Bop & funct3_7;
 
-    wire LB =  Lop & funct3_0;
-    wire LH =  Lop & funct3_1;
-    wire LW =  Lop & funct3_2;
+    wire LB  =  Lop & funct3_0;
+    wire LH  =  Lop & funct3_1;
+    wire LW  =  Lop & funct3_2;
     wire LBU = Lop & funct3_4;
     wire LHU = Lop & funct3_5;
 
@@ -75,14 +74,14 @@ module CtrlUnit(
     wire LUI   = opcode == 7'b0110111;
     wire AUIPC = opcode == 7'b0010111;
 
-    wire JAL  =  opcode == 7'b1101111;
+    wire JAL    =  opcode == 7'b1101111;
     assign JALR = (opcode == 7'b1100111) && funct3_0;
 
-    wire R_valid = AND | OR | ADD | XOR | SLL | SRL | SRA | SUB | SLT | SLTU;
+    wire R_valid = AND  | OR  | ADD  | XOR  | SLL  | SRL  | SRA  | SUB  | SLT  | SLTU;
     wire I_valid = ANDI | ORI | ADDI | XORI | SLLI | SRLI | SRAI | SLTI | SLTIU;
-    wire B_valid = BEQ | BNE | BLT | BGE | BLTU | BGEU;
-    wire L_valid = LW | LH | LB | LHU | LBU;
-    wire S_valid = SW | SH | SB;
+    wire B_valid = BEQ  | BNE | BLT  | BGE  | BLTU | BGEU;
+    wire L_valid = LW   | LH  | LB   | LHU  | LBU;
+    wire S_valid = SW   | SH  | SB;
 
 
     assign Branch = JAL | JALR | B_valid & cmp_res;
@@ -127,18 +126,18 @@ module CtrlUnit(
     parameter ALU_SRA  = 4'b1010;
     parameter ALU_Ap4  = 4'b1011;
     parameter ALU_Bout = 4'b1100;
-    assign ALUControl = {4{ADD | ADDI | L_valid | S_valid | AUIPC}} & ALU_ADD  |
-                        {4{SUB}}                                    & ALU_SUB  |
-                        {4{AND | ANDI}}                             & ALU_AND  |
-                        {4{OR | ORI}}                               & ALU_OR   |
-                        {4{XOR | XORI}}                             & ALU_XOR  |
-                        {4{SLL | SLLI}}                             & ALU_SLL  |
-                        {4{SRL | SRLI}}                             & ALU_SRL  |
-                        {4{SLT | SLTI}}                             & ALU_SLT  |
-                        {4{SLTU | SLTIU}}                           & ALU_SLTU |
-                        {4{SRA | SRAI}}                             & ALU_SRA  |
-                        {4{JAL | JALR}}                             & ALU_Ap4  |
-                        {4{LUI}}                                    & ALU_Bout ;
+    assign ALUControl = {4{ADD  | ADDI | L_valid | S_valid | AUIPC}} & ALU_ADD  |
+                        {4{SUB}}                                     & ALU_SUB  |
+                        {4{AND  | ANDI}}                             & ALU_AND  |
+                        {4{OR   | ORI}}                              & ALU_OR   |
+                        {4{XOR  | XORI}}                             & ALU_XOR  |
+                        {4{SLL  | SLLI}}                             & ALU_SLL  |
+                        {4{SRL  | SRLI}}                             & ALU_SRL  |
+                        {4{SLT  | SLTI}}                             & ALU_SLT  |
+                        {4{SLTU | SLTIU}}                            & ALU_SLTU |
+                        {4{SRA  | SRAI}}                             & ALU_SRA  |
+                        {4{JAL  | JALR}}                             & ALU_Ap4  |
+                        {4{LUI}}                                     & ALU_Bout ;
 
     assign DatatoReg = L_valid;
 
@@ -156,7 +155,7 @@ module CtrlUnit(
     parameter hazard_optype_LOAD = 2'd2;
     parameter hazard_optype_STORE = 2'd3;
     assign hazard_optype = {2{R_valid | I_valid | JAL | JALR | LUI | AUIPC}} & hazard_optype_ALU  | 
-                            {2{L_valid}}                                     & hazard_optype_LOAD |
-                            {2{S_valid}}                                     & hazard_optype_STORE;
+                           {2{L_valid}}                                     & hazard_optype_LOAD  |
+                           {2{S_valid}}                                     & hazard_optype_STORE;
 
 endmodule
