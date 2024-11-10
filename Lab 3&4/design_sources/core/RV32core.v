@@ -2,15 +2,15 @@
 
 
 module  RV32core(
-        input debug_en,  // debug enable
-        input debug_step,  // debug step clock
-        input [6:0] debug_addr,  // debug address
-        output[31:0] debug_data,  // debug data
+        input debug_en,  			// debug enable
+        input debug_step,  			// debug step clock
+        input [6:0] debug_addr,  	// debug address
+        output[31:0] debug_data,  	// debug data
         output[31:0] mem_addr,
         output[31:0] mem_data,
-        input clk,  // main clock
-        input rst,  // synchronous reset
-        input interrupter,  // interrupt source, for future use
+        input clk,  				// main clock
+        input rst,  				// synchronous reset
+        input interrupter,  		// interrupt source, for future use
         input vga_sw
 	);
 
@@ -19,33 +19,33 @@ module  RV32core(
 	debug_clk clock(.clk(clk),.debug_en(debug_en),.debug_step(debug_step),.debug_clk(debug_clk));
 
     wire Branch_ctrl, JALR, RegWrite_ctrl, mem_w_ctrl, MIO_ctrl,
-        ALUSrc_A_ctrl, ALUSrc_B_ctrl, DatatoReg_ctrl, rs1use_ctrl, rs2use_ctrl;
-    wire[1:0] hazard_optype_ctrl;
-    wire[2:0] ImmSel_ctrl, cmp_ctrl;
-    wire[3:0] ALUControl_ctrl;
+         ALUSrc_A_ctrl, ALUSrc_B_ctrl, DatatoReg_ctrl, rs1use_ctrl, rs2use_ctrl;
+    wire [1:0] hazard_optype_ctrl;
+    wire [2:0] ImmSel_ctrl, cmp_ctrl;
+    wire [3:0] ALUControl_ctrl;
 
     wire forward_ctrl_ls;
-    wire[1:0] forward_ctrl_A, forward_ctrl_B;
+    wire [1:0] forward_ctrl_A, forward_ctrl_B;
 
 	wire PC_EN_IF;
 	wire [31:0] PC_IF, next_PC_IF, PC_4_IF, inst_IF;
 
     wire reg_FD_EN,reg_FD_stall,reg_FD_flush, cmp_res_ID;
     wire [31:0] jump_PC_ID, PC_ID, inst_ID, Debug_regs, rs1_data_reg, rs2_data_reg,
-        Imm_out_ID, rs1_data_ID, rs2_data_ID, addA_ID;
+         Imm_out_ID, rs1_data_ID, rs2_data_ID, addA_ID;
     
     wire reg_DE_EN, reg_DE_flush, RegWrite_EXE, mem_w_EXE, MIO_EXE,
-        ALUSrc_A_EXE, ALUSrc_B_EXE, ALUzero_EXE, ALUoverflow_EXE, DatatoReg_EXE;
-    wire[2:0] u_b_h_w_EXE;
-    wire[3:0] ALUControl_EXE;
-    wire[4:0] rs1_EXE, rs2_EXE, rd_EXE;
-    wire[31:0] ALUout_EXE, PC_EXE, inst_EXE, rs1_data_EXE, rs2_data_EXE, Imm_EXE,
-        ALUA_EXE, ALUB_EXE, Dataout_EXE;
+         ALUSrc_A_EXE, ALUSrc_B_EXE, ALUzero_EXE, ALUoverflow_EXE, DatatoReg_EXE;
+    wire [2:0] u_b_h_w_EXE;
+    wire [3:0] ALUControl_EXE;
+    wire [4:0] rs1_EXE, rs2_EXE, rd_EXE;
+    wire [31:0] ALUout_EXE, PC_EXE, inst_EXE, rs1_data_EXE, rs2_data_EXE, Imm_EXE,
+         ALUA_EXE, ALUB_EXE, Dataout_EXE;
     
     wire reg_EM_EN, reg_EM_flush, RegWrite_MEM, DatatoReg_MEM, mem_w_MEM, MIO_MEM;
-    wire[2:0] u_b_h_w_MEM;
-    wire[4:0] rd_MEM;
-    wire[31:0] ALUout_MEM, PC_MEM, inst_MEM, Dataout_MEM, Datain_MEM;
+    wire [2:0] u_b_h_w_MEM;
+    wire [4:0] rd_MEM;
+    wire [31:0] ALUout_MEM, PC_MEM, inst_MEM, Dataout_MEM, Datain_MEM;
     wire cmu_stall;
     wire [31:0] ram_addr;
     wire ram_cs;
@@ -58,7 +58,7 @@ module  RV32core(
 
 
     wire reg_MW_EN, reg_MW_flush, RegWrite_WB, DatatoReg_WB;
-    wire[4:0] rd_WB;
+    wire [4:0] rd_WB;
     wire [31:0] wt_data_WB, PC_WB, inst_WB, ALUout_WB, Datain_WB;
 
 
@@ -75,7 +75,6 @@ module  RV32core(
     // ID
     REG_IF_ID reg_IF_ID(.clk(debug_clk),.rst(rst),.EN(reg_FD_EN),.Data_stall(reg_FD_stall),
         .flush(reg_FD_flush),.PCOUT(PC_IF),.IR(inst_IF),
-
         .IR_ID(inst_ID),.PCurrent_ID(PC_ID));
     
     CtrlUnit ctrl(.inst(inst_ID),.cmp_res(cmp_res_ID),.Branch(Branch_ctrl),.ALUSrc_A(ALUSrc_A_ctrl),
@@ -119,7 +118,6 @@ module  RV32core(
 		.rs2_data(rs2_data_ID),.Imm32(Imm_out_ID),.rd_addr(inst_ID[11:7]),.ALUSrc_A(ALUSrc_A_ctrl),
 		.ALUSrc_B(ALUSrc_B_ctrl),.ALUC(ALUControl_ctrl),.DatatoReg(DatatoReg_ctrl),
         .RegWrite(RegWrite_ctrl),.WR(mem_w_ctrl),.u_b_h_w(inst_ID[14:12]),.MIO(MIO_ctrl),
-
         .PCurrent_EX(PC_EXE),.IR_EX(inst_EXE),.rs1_EX(rs1_EXE),.rs2_EX(rs2_EXE),
         .A_EX(rs1_data_EXE),.B_EX(rs2_data_EXE),.Imm32_EX(Imm_EXE),.rd_EX(rd_EXE),
         .ALUSrc_A_EX(ALUSrc_A_EXE),.ALUSrc_B_EX(ALUSrc_B_EXE),.ALUC_EX(ALUControl_EXE),
@@ -141,7 +139,6 @@ module  RV32core(
         .IR_EX(inst_EXE),.PCurrent_EX(PC_EXE),.ALUO_EX(ALUout_EXE),.B_EX(Dataout_EXE),
         .rd_EX(rd_EXE),.DatatoReg_EX(DatatoReg_EXE),.RegWrite_EX(RegWrite_EXE),
         .WR_EX(mem_w_EXE),.u_b_h_w_EX(u_b_h_w_EXE),.MIO_EX(MIO_EXE),
-
         .PCurrent_MEM(PC_MEM),.IR_MEM(inst_MEM),.ALUO_MEM(ALUout_MEM),.Datao_MEM(Dataout_MEM),
         .rd_MEM(rd_MEM),.DatatoReg_MEM(DatatoReg_MEM),.RegWrite_MEM(RegWrite_MEM),
         .WR_MEM(mem_w_MEM),.u_b_h_w_MEM(u_b_h_w_MEM),.MIO_MEM(MIO_MEM));
@@ -155,14 +152,11 @@ module  RV32core(
     data_ram RAM(.clk(debug_clk),.rst(rst),.addr(ram_addr),
 		.cs(ram_cs),.we(ram_we),.din(ram_din),.dout(ram_dout),
 		.stall(),.ack(ram_ack),.ram_state(ram_state));
-        
-    // RAM_B data_ram(.addra(ALUout_MEM),.clka(debug_clk),.dina(Dataout_MEM), 
-    //     .wea(mem_w_MEM),.douta(Datain_MEM),.mem_u_b_h_w(u_b_h_w_MEM));
     
     assign mem_addr = vga_sw ? MIO_MEM ? ALUout_MEM : 32'hFFFFFFFF : PC_IF;
 	assign mem_data = vga_sw ? MIO_MEM ? Datain_MEM : 32'hAA55AA55 : inst_IF;
-        
 
+	
     // WB
     REG_MEM_WB reg_MEM_WB(.clk(debug_clk),.rst(rst),.EN(reg_MW_EN),.flush(reg_MW_flush),.IR_MEM(inst_MEM),
         .PCurrent_MEM(PC_MEM),.ALUO_MEM(ALUout_MEM),.Datai(Datain_MEM),.rd_MEM(rd_MEM),
@@ -209,7 +203,6 @@ module  RV32core(
                     .RegWrite(RegWrite_WB),
                     .data_hazard(reg_FD_stall),
                     .control_hazard(Branch_ctrl),
-
                     .Debug_addr(debug_addr[4:0]),
                     .Test_signal(Test_signal)    
                     );
