@@ -1,10 +1,11 @@
 `timescale 1ns / 1ps
 
 module ImmGen(
-            input  wire [2:0] ImmSel,
-            input  wire [31:0] inst_field,
+            input wire [2:0]  ImmSel,
+            input wire [31:0] inst_field,
             output[31:0] Imm_out
     );
+            
     parameter Imm_type_I = 3'b001;
     parameter Imm_type_B = 3'b010;
     parameter Imm_type_J = 3'b011;
