@@ -2,7 +2,7 @@
 
 module RAM_B(
     input [31:0] addra,
-    input clka,      // normal clock
+    input clka,
     input[31:0] dina,
     input wea, 
     output[31:0] douta,
@@ -12,7 +12,7 @@ module RAM_B(
     reg[7:0] data[0:127];
 
     initial	begin
-        $readmemh("D:/Download/COD/Project__1/ram.hex", data);
+        $readmemh("Path/To/ram.hex", data);
     end
 
     always @ (negedge clka) begin
@@ -26,7 +26,6 @@ module RAM_B(
             end
         end
     end
-
     
     assign douta = addra[31:7] ? 32'b0 :
         mem_u_b_h_w[1] ? {data[addra[6:0] + 3], data[addra[6:0] + 2],
