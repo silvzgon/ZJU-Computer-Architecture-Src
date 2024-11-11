@@ -1,9 +1,9 @@
 `timescale 1ns / 1ps
 
 module ALU(
-    input[31:0] A, B,
-    input[3:0] Control,
-    output[31:0] res,
+    input [31:0] A, B,
+    input [3:0] Control,
+    output [31:0] res,
     output zero, overflow
 );
 
@@ -20,7 +20,7 @@ module ALU(
     localparam ALU_Ap4  = 4'b1011;
     localparam ALU_Bout = 4'b1100;
 
-    wire[4:0] shamt = B[4:0];
+    wire[4:0]  shamt    = B[4:0];
     wire[32:0] res_subu = {1'b0,A} - {1'b0,B};
 
     wire[31:0] res_ADD  = A + B;
@@ -31,10 +31,10 @@ module ALU(
     wire[31:0] res_SLL  = A << shamt;
     wire[31:0] res_SRL  = A >> shamt;
 
-    wire add_of = A[31] & B[31] & ~res_ADD[31] | // neg + neg = pos
-                  ~A[31] & ~B[31] & res_ADD[31]; // pos + pos = neg
-    wire sub_of = ~A[31] & B[31] & res_SUB[31] | // pos - neg = neg
-                  A[31] & ~B[31] & ~res_SUB[31]; // neg - pos = pos
+    wire add_of = A[31] & B[31] & ~res_ADD[31] |     // neg + neg = pos
+                  ~A[31] & ~B[31] & res_ADD[31];     // pos + pos = neg
+    wire sub_of = ~A[31] & B[31] & res_SUB[31] |     // pos - neg = neg
+                  A[31] & ~B[31] & ~res_SUB[31];     // neg - pos = pos
     
     wire[31:0] res_SLT  = {31'b0, res_SUB[31] ^ sub_of};
     wire[31:0] res_SLTU = {31'b0, res_subu[32]};
@@ -59,7 +59,7 @@ module ALU(
     assign zero = ~|res;
     
     assign overflow = (Control == ALU_ADD && add_of) | 
-                    (Control == ALU_SUB && sub_of);
+                      (Control == ALU_SUB && sub_of);
     
     assign res = {32{ADD }} & res_ADD  |
                  {32{SUB }} & res_SUB  |
