@@ -4,12 +4,12 @@ module ExceptionUnit(
     input clk, rst,
     input csr_rw_in,
     // write/set/clear (funct bits from instruction)
-    input[1:0] csr_wsc_mode_in,
+    input [1:0] csr_wsc_mode_in,
     input csr_w_imm_mux,
-    input[11:0] csr_rw_addr_in,
-    input[31:0] csr_w_data_reg,
-    input[4:0] csr_w_data_imm,
-    output[31:0] csr_r_data_out,
+    input [11:0] csr_rw_addr_in,
+    input [31:0] csr_w_data_reg,
+    input [4:0] csr_w_data_imm,
+    output [31:0] csr_r_data_out,
 
     input interrupt,
     input illegal_inst,
@@ -19,33 +19,33 @@ module ExceptionUnit(
 
     input mret,
 
-    input[31:0] epc_cur,
-    input[31:0] epc_next,
-    output[31:0] PC_redirect,
+    input [31:0] epc_cur,
+    input [31:0] epc_next,
+    output [31:0] PC_redirect,
     output redirect_mux,
 
     output reg_FD_flush, reg_DE_flush, reg_EM_flush, reg_MW_flush, 
     output RegWrite_cancel
 );
 
-    reg[11:0] csr_waddr;
-    reg[31:0] csr_wdata;
+    reg [11:0] csr_waddr;
+    reg [31:0] csr_wdata;
     reg csr_w;
-    reg[1:0] csr_wsc;
-    wire[11:0] csr_raddr;
-    wire[31:0] csr_rdata;
+    reg [1:0] csr_wsc;
+    wire [11:0] csr_raddr;
+    wire [31:0] csr_rdata;
 
-    wire[31:0] mstatus;
-    wire[31:0] mepc;
-    wire[31:0] mtvec;
-    wire[31:0] mie;
+    wire [31:0] mstatus;
+    wire [31:0] mepc;
+    wire [31:0] mtvec;
+    wire [31:0] mie;
 
     wire interrupt_or_exception;
-    wire[31:0] mepc_w;
-    wire[31:0] mcause_w;
-    wire[31:0] mtval_w;
+    wire [31:0] mepc_w;
+    wire [31:0] mcause_w;
+    wire [31:0] mtval_w;
 
-    wire[3:0] waddr_map;
+    wire [3:0] waddr_map;
     wire enable_exception;
 
     wire [3:0] exception_index;
@@ -81,10 +81,10 @@ module ExceptionUnit(
 
     always @ (negedge clk or posedge rst) begin
         if(rst) begin
-          csr_waddr <= 0;
-          csr_wdata <= 0;
-          csr_w     <= 0;
-          csr_wsc   <= 0;
+            csr_waddr <= 0;
+            csr_wdata <= 0;
+            csr_w     <= 0;
+            csr_wsc   <= 0;
         end
         else begin
             if(csr_rw_in) begin
