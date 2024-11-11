@@ -2,7 +2,7 @@
 
 
 module CtrlUnit(
-    input[31:0] inst,
+    input [31:0] inst,
     input cmp_res,
     output Branch, ALUSrc_A, ALUSrc_B, DatatoReg, RegWrite, mem_w,
            mem_r, rs1use, rs2use,
@@ -19,11 +19,11 @@ module CtrlUnit(
     wire[2:0] funct3 = inst[14:12];
     wire[6:0] opcode = inst[6:0];
 
-    wire Rop = opcode == 7'b0110011;
-    wire Iop = opcode == 7'b0010011;
-    wire Bop = opcode == 7'b1100011;
-    wire Lop = opcode == 7'b0000011;
-    wire Sop = opcode == 7'b0100011;
+    wire Rop   = opcode == 7'b0110011;
+    wire Iop   = opcode == 7'b0010011;
+    wire Bop   = opcode == 7'b1100011;
+    wire Lop   = opcode == 7'b0000011;
+    wire Sop   = opcode == 7'b0100011;
     wire CSRop = opcode == 7'b1110011;
 
     wire funct7_0  = funct7 == 7'h0;
@@ -173,8 +173,8 @@ module CtrlUnit(
     localparam hazard_optype_STORE = 2'd3;
     assign hazard_optype = {2{R_valid | I_valid | JAL | JALR | LUI | AUIPC}}
                                                      & hazard_optype_ALU  | 
-                            {2{L_valid | CSR_valid}} & hazard_optype_LOAD |
-                            {2{S_valid}}             & hazard_optype_STORE;
+                           {2{L_valid | CSR_valid}}  & hazard_optype_LOAD |
+                           {2{S_valid}}              & hazard_optype_STORE;
     
     assign csr_rw = CSR_valid;
 
